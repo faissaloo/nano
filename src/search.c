@@ -663,7 +663,7 @@ ssize_t do_replace_loop(const char *needle, bool whole_word_only,
 					update_line(openfile->current, openfile->current_x);
 			}
 
-			set_modified();
+			on_modified();
 			as_an_at = TRUE;
 			numreplaced++;
 		}

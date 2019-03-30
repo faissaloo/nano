@@ -129,6 +129,18 @@ void initialize_buffer_text(void)
 	openfile->totsize = 0;
 }
 
+/* Performs any actions needed after every modification */
+void on_modified(void)
+{
+	set_modified();
+#ifdef ENABLE_AUTOSAVE
+	/*Don't autosave if the user hasn't given a filename yet*/
+	if (ISSET(AUTOSAVE) && *openfile->filename != '\0') {
+		do_writeout(TRUE, FALSE);
+	}
+#endif
+}
+
 /* Mark the current file as modified if it isn't already, and then
  * update the titlebar to display the file's new status. */
 void set_modified(void)
@@ -1205,7 +1217,7 @@ void do_insertfile(void)
 					openfile->current_x = 0;
 					openfile->placewewant = 0;
 
-					set_modified();
+					on_modified();
 				}
 #endif
 			} else
@@ -1238,7 +1250,7 @@ void do_insertfile(void)
 				/* If the file actually changed, mark it as modified. */
 				if (openfile->current->lineno != was_current_lineno ||
 								openfile->current_x != was_current_x)
-					set_modified();
+					on_modified();
 #ifndef NANO_TINY
 				/* Ensure that the buffer retains the format that it had. */
 				openfile->fmt = original_fmt;
@@ -2073,12 +2085,12 @@ bool write_marked_file(const char *name, FILE *f_open, bool tmp,
 #endif /* !NANO_TINY */
 
 /* Write the current file to disk.  If the mark is on, write the current
- * marked selection to disk.  If exiting is TRUE, write the entire file
+ * marked selection to disk.  If all is TRUE, write the entire file
  * to disk regardless of whether the mark is on.  Do not ask for a name
  * when withprompt is FALSE nor when the TEMP_FILE flag is set and the
  * file already has a name.  Return 0 on error, 1 on success, and 2 when
  * the buffer is to be discarded. */
-int do_writeout(bool exiting, bool withprompt)
+int do_writeout(bool all, bool withprompt)
 {
 	bool result = FALSE;
 	kind_of_writing_type method = OVERWRITE;
@@ -2095,7 +2107,7 @@ int do_writeout(bool exiting, bool withprompt)
 
 	given = mallocstrcpy(NULL,
 #ifndef NANO_TINY
-		(openfile->mark && !exiting) ? "" :
+		(openfile->mark && !all) ? "" :
 #endif
 		openfile->filename);
 
@@ -2113,7 +2125,7 @@ int do_writeout(bool exiting, bool withprompt)
 		/* When the mark is on, offer to write the selection to disk, but
 		 * not when in restricted mode, because it would allow writing to
 		 * a file not specified on the command line. */
-		if (openfile->mark && !exiting && !ISSET(RESTRICTED))
+		if (openfile->mark && !all && !ISSET(RESTRICTED))
 			/* TRANSLATORS: The next six strings are prompts. */
 			msg = (method == PREPEND) ? _("Prepend Selection to File") :
 						(method == APPEND) ? _("Append Selection to File") :
@@ -2128,7 +2140,7 @@ int do_writeout(bool exiting, bool withprompt)
 		present_path = mallocstrcpy(present_path, "./");
 
 		/* When we shouldn't prompt, use the existing filename. */
-		if ((!withprompt || (ISSET(TEMP_FILE) && exiting)) &&
+		if ((!withprompt || (ISSET(TEMP_FILE) && all)) &&
 								openfile->filename[0] != '\0')
 			answer = mallocstrcpy(answer, openfile->filename);
 		else {
@@ -2199,7 +2211,7 @@ int do_writeout(bool exiting, bool withprompt)
 		 * "zzy" as the filename to save under (hence "xyzzy"), and
 		 * this is the first time we've done this, show an Easter
 		 * egg.  Display the credits. */
-		if (!did_credits && exiting && !ISSET(TEMP_FILE) &&
+		if (!did_credits && all && !ISSET(TEMP_FILE) &&
 								strcasecmp(answer, "zzy") == 0) {
 			if (LINES > 5 && COLS > 31) {
 				do_credits();
@@ -2243,7 +2255,7 @@ int do_writeout(bool exiting, bool withprompt)
 
 				if (!maychange) {
 #ifndef NANO_TINY
-					if (exiting || !openfile->mark)
+					if (all || !openfile->mark)
 #endif
 					{
 						if (do_yesno_prompt(FALSE, _("Save file under "
@@ -2310,7 +2322,7 @@ int do_writeout(bool exiting, bool withprompt)
 		 * function is disabled, since it allows reading from or
 		 * writing to files not specified on the command line. */
 #ifndef NANO_TINY
-		if (openfile->mark && !exiting && withprompt && !ISSET(RESTRICTED))
+		if (openfile->mark && !all && withprompt && !ISSET(RESTRICTED))
 			result = write_marked_file(answer, NULL, FALSE, method);
 		else
 #endif

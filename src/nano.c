@@ -869,6 +869,9 @@ void usage(void)
 #ifdef ENABLE_LINENUMBERS
 	print_opt("-l", "--linenumbers", N_("Show line numbers in front of the text"));
 #endif
+#ifdef ENABLE_AUTOSAVE
+	print_opt("-!", "--autosave", N_("Write to the file on every change"));
+#endif
 #ifdef ENABLE_MOUSE
 	print_opt("-m", "--mouse", N_("Enable the use of the mouse"));
 #endif
@@ -947,6 +950,9 @@ void version(void)
 #ifdef ENABLE_LINENUMBERS
 	printf(" --enable-linenumbers");
 #endif
+#ifdef ENABLE_AUTOSAVE
+	printf(" --enable-autosave");
+#endif
 #ifdef ENABLE_MOUSE
 	printf(" --enable-mouse");
 #endif
@@ -995,6 +1001,9 @@ void version(void)
 #endif
 #ifndef ENABLE_LINENUMBERS
 	printf(" --disable-linenumbers");
+#endif
+#ifndef ENABLE_AUTOSAVE
+	printf(" --disable-autosave");
 #endif
 #ifndef ENABLE_MOUSE
 	printf(" --disable-mouse");
@@ -1167,7 +1176,7 @@ bool scoop_stdin(void)
 	doupdate();
 
 	if (!ISSET(VIEW_MODE) && openfile->totsize > 0)
-		set_modified();
+		on_modified();
 
 	return TRUE;
 }
@@ -1884,7 +1893,7 @@ void do_output(char *output, size_t output_len, bool allow_cntrls)
 						char_len);
 		current_len += char_len;
 		openfile->totsize++;
-		set_modified();
+		on_modified();
 
 #ifndef NANO_TINY
 		/* Only add a new undo item when the current item is not an ADD or when
@@ -2003,6 +2012,9 @@ int main(int argc, char **argv)
 		{"jumpyscrolling", 0, NULL, 'j'},
 #ifdef ENABLE_LINENUMBERS
 		{"linenumbers", 0, NULL, 'l'},
+#endif
+#ifdef ENABLE_AUTOSAVE
+		{"autosave", 0, NULL, '!'},
 #endif
 #ifdef ENABLE_MOUSE
 		{"mouse", 0, NULL, 'm'},
@@ -2335,6 +2347,11 @@ int main(int argc, char **argv)
 #ifndef NANO_TINY
 			case '$':
 				SET(SOFTWRAP);
+				break;
+#endif
+#ifdef ENABLE_AUTOSAVE
+			case '!':
+				SET(AUTOSAVE);
 				break;
 #endif
 			default:

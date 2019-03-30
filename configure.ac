@@ -207,6 +207,17 @@ if test "x$enable_linenumbers" != xno; then
 	AC_DEFINE(ENABLE_LINENUMBERS, 1, [Define this to enable line numbering.])
 fi
 
+AC_ARG_ENABLE(autosave,
+AS_HELP_STRING([--disable-autosave], [Disable line autosave]))
+if test "x$enable_tiny" = xyes; then
+	if test "x$enable_autosave" != xyes; then
+		enable_autosave=no
+	fi
+fi
+if test "x$enable_autosave" != xno; then
+	AC_DEFINE(ENABLE_AUTOSAVE, 1, [Define this to enable autosave.])
+fi
+
 AC_ARG_ENABLE(mouse,
 AS_HELP_STRING([--disable-mouse], [Disable mouse support]))
 if test "x$enable_tiny" = xyes; then

@@ -166,7 +166,7 @@ void do_indent(void)
 
 	free(indentation);
 
-	set_modified();
+	on_modified();
 	refresh_needed = TRUE;
 	shift_held = TRUE;
 }
@@ -261,7 +261,7 @@ void do_unindent(void)
 		free(indentation);
 	}
 
-	set_modified();
+	on_modified();
 	refresh_needed = TRUE;
 	shift_held = TRUE;
 }
@@ -426,7 +426,7 @@ void do_comment(void)
 			update_multiline_undo(line->lineno, "");
 	}
 
-	set_modified();
+	on_modified();
 	refresh_needed = TRUE;
 	shift_held = TRUE;
 }
@@ -688,7 +688,7 @@ void do_undo(void)
 		openfile->modified = FALSE;
 		titlebar(NULL);
 	} else
-		set_modified();
+		on_modified();
 }
 
 /* Redo the last thing(s) we undid. */
@@ -859,7 +859,7 @@ void do_redo(void)
 		openfile->modified = FALSE;
 		titlebar(NULL);
 	} else
-		set_modified();
+		on_modified();
 }
 #endif /* !NANO_TINY */
 
@@ -926,7 +926,7 @@ void do_enter(void)
 	openfile->placewewant = xplustabs();
 
 	openfile->totsize++;
-	set_modified();
+	on_modified();
 
 #ifndef NANO_TINY
 	if (ISSET(AUTOINDENT) && !allblanks)
@@ -2278,7 +2278,7 @@ void do_justify(bool full_justify)
 	/* Set the desired screen column (always zero, except at EOF). */
 	openfile->placewewant = xplustabs();
 
-	set_modified();
+	on_modified();
 	refresh_needed = TRUE;
 	shift_held = TRUE;
 }

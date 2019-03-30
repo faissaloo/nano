@@ -264,6 +264,7 @@ void do_uncut_text(void);
 
 /* Most functions in files.c. */
 void initialize_buffer_text(void);
+void on_modified(void);
 void set_modified(void);
 bool open_buffer(const char *filename, bool new_buffer);
 #ifdef ENABLE_SPELLER
@@ -301,7 +302,7 @@ bool write_file(const char *name, FILE *f_open, bool tmp,
 bool write_marked_file(const char *name, FILE *f_open, bool tmp,
 		kind_of_writing_type method);
 #endif
-int do_writeout(bool exiting, bool withprompt);
+int do_writeout(bool all, bool withprompt);
 void do_writeout_void(void);
 void do_savefile(void);
 char *real_dir_from_tilde(const char *buf);

@@ -111,7 +111,7 @@ void do_deletion(undo_type action)
 		refresh_needed = TRUE;
 #endif
 
-	set_modified();
+	on_modified();
 }
 
 /* Delete the character under the cursor. */
@@ -343,7 +343,7 @@ void do_cut_text(bool copy_text, bool marked, bool cut_till_eof, bool append)
 	} else
 #endif /* !NANO_TINY */
 
-	set_modified();
+	on_modified();
 	refresh_needed = TRUE;
 }
 
@@ -504,6 +504,6 @@ void do_uncut_text(void)
 	/* Set the desired x position to where the pasted text ends. */
 	openfile->placewewant = xplustabs();
 
-	set_modified();
+	on_modified();
 	refresh_needed = TRUE;
 }

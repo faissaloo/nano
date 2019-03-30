@@ -1261,6 +1261,9 @@ void shortcut_init(void)
 #ifdef ENABLE_LINENUMBERS
 	add_to_sclist(MMAIN, "M-#", 0, do_toggle_void, LINE_NUMBERS);
 #endif
+#ifdef ENABLE_AUTOSAVE
+	add_to_sclist(MMAIN, "M-!", 0, do_toggle_void, AUTOSAVE);
+#endif
 	add_to_sclist(MMAIN, "M-P", 0, do_toggle_void, WHITESPACE_DISPLAY);
 #ifdef ENABLE_COLOR
 	add_to_sclist(MMAIN, "M-Y", 0, do_toggle_void, NO_COLOR_SYNTAX);
@@ -1432,6 +1435,8 @@ const char *flagtostr(int flag)
 			return N_("Suspension");
 		case LINE_NUMBERS:
 			return N_("Line numbering");
+		case AUTOSAVE:
+			return N_("Autosave");
 		default:
 			return "Bad toggle -- please report a bug";
 	}
@@ -1668,6 +1673,10 @@ sc *strtosc(const char *input)
 #ifdef ENABLE_LINENUMBERS
 		else if (!strcasecmp(input, "linenumbers"))
 			s->toggle = LINE_NUMBERS;
+#endif
+#ifdef ENABLE_AUTOSAVE
+		else if (!strcasecmp(input, "autosave"))
+			s->toggle = AUTOSAVE;
 #endif
 		else if (!strcasecmp(input, "whitespacedisplay"))
 			s->toggle = WHITESPACE_DISPLAY;

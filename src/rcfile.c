@@ -58,6 +58,9 @@ static const rcoption rcopts[] = {
 #ifdef ENABLE_LINENUMBERS
 	{"linenumbers", LINE_NUMBERS},
 #endif
+#ifdef ENABLE_AUTOSAVE
+	{"autosave", AUTOSAVE},
+#endif
 	{"morespace", MORE_SPACE},  /* Deprecated; remove in 2021. */
 #ifdef ENABLE_MOUSE
 	{"mouse", USE_MOUSE},
